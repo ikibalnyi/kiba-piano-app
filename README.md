@@ -4,6 +4,17 @@ This repository contains the instruction and codebase for an interview task at [
 
 *If anything here is unclear or any questions come to your mind, don’t hesitate to contact us - we’re here to help you!*
 
+
+Commands
+---
+
+You can execute these commands by running in the console `yarn <command>`
+
+| Command           | Description |
+| ----------------- | ----------- |
+| `start`           | Runs client app |
+| `server`          | Runs graphql server |
+
 ## Task Instruction
 
 Please copy this codebase to your Github/Gitlab account using [Github Importer](https://help.github.com/en/articles/importing-a-repository-with-github-importer) / [Gitlab Importer](https://docs.gitlab.com/ee/user/project/import/repo_by_url.html) or by cloning it (don't create a fork!). Then add a Pull Request implementing the following functionality:
@@ -12,7 +23,7 @@ Please copy this codebase to your Github/Gitlab account using [Github Importer](
 
 ### Implementation requirements
 - Focus on **clean, readable code** and **simplicity**
-- Use the [graphql-server](graphql-server) to store and retrieve songs (here the docs for client-side [Queries](https://www.apollographql.com/docs/react/essentials/queries/) & [Mutations](https://www.apollographql.com/docs/react/essentials/mutations/))
+- Use the [graphql-server](server) to store and retrieve songs (here the docs for client-side [Queries](https://www.apollographql.com/docs/react/essentials/queries/) & [Mutations](https://www.apollographql.com/docs/react/essentials/mutations/))
 
 ### Product requirements
 - Provide a button to start/stop recording a sequence of keys played on the Piano UI
@@ -29,6 +40,6 @@ Here a very simple example of what the UI could look like:
 
 The codebase consists of:
 - a minimal React [piano-app](piano-app) based on the [react-piano](https://github.com/kevinsqi/react-piano) package
-- a [graphql-server](graphql-server) based on [Apollo](https://www.apollographql.com/)
+- a [graphql-server](server) based on [Apollo](https://www.apollographql.com/)
 
 Basic infos and how to run instructions for both parts can be found in the according READMEs in each directory.

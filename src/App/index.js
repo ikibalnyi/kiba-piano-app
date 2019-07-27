@@ -1,6 +1,6 @@
 import React from 'react';
-import './App.css';
-import Piano from "./Piano";
+import './style.css';
+import Piano from '../Piano';
 
 function App() {
   return (

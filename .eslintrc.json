@@ -1,0 +1,27 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "extends": [
+    "google"
+  ],
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "rules": {
+    "require-jsdoc": "off",
+    "no-invalid-this": "off",
+    "max-len": ["error", {
+      "code": 120,
+      "tabWidth": 2
+    }],
+    "indent": ["error", 2],
+    "object-curly-spacing": ["error","always"]
+  }
+}
