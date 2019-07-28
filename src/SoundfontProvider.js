@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Soundfont from 'soundfont-player';
+import SoundfontContext from './SoundfontContext';
 
 class SoundfontProvider extends React.Component {
   static propTypes = {
@@ -96,12 +97,16 @@ class SoundfontProvider extends React.Component {
   };
 
   render() {
-    return this.props.render({
-      isLoading: !this.state.instrument,
-      playNote: this.playNote,
-      stopNote: this.stopNote,
-      stopAllNotes: this.stopAllNotes,
-    });
+    return (
+      <SoundfontContext.Provider value={{
+        isLoading: !this.state.instrument,
+        playNote: this.playNote,
+        stopNote: this.stopNote,
+        stopAllNotes: this.stopAllNotes,
+      }}>
+        {this.props.children}
+      </SoundfontContext.Provider>
+    );
   }
 }
 

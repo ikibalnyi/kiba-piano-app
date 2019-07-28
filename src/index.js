@@ -5,15 +5,25 @@ import { ApolloProvider } from 'react-apollo';
 
 import './index.css';
 import App from './App';
+import SoundfontProvider from './SoundfontProvider';
 
 const client = new ApolloClient({
   uri: 'http://localhost:4000',
 });
 
 
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+const soundfontHostname = 'https://d1pzp51pvbm36p.cloudfront.net';
+
 ReactDOM.render(
   <ApolloProvider client={client}>
-    <App/>
+    <SoundfontProvider
+      instrumentName="acoustic_grand_piano"
+      audioContext={audioContext}
+      hostname={soundfontHostname}
+    >
+      <App/>
+    </SoundfontProvider>
   </ApolloProvider>,
   document.getElementById('root')
 );

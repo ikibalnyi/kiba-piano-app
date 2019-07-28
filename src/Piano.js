@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Piano as ReactPiano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
 import 'react-piano/dist/styles.css';
 
-import SoundfontProvider from './SoundfontProvider';
-
-const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-const soundfontHostname = 'https://d1pzp51pvbm36p.cloudfront.net';
+import SoundfontContext from './SoundfontContext';
 
 const noteRange = {
   first: MidiNumbers.fromNote('c3'),
@@ -19,7 +16,14 @@ const keyboardShortcuts = KeyboardShortcuts.create({
 });
 
 const Piano = ({ isRecording, onPlayNote, onRecordNote }) => {
+  const { isLoading, playNote, stopNote } = useContext(SoundfontContext);
   const [playingNotes, setPlayingNotes] = useState({});
+
+  useEffect(() => {
+    if (!isRecording) {
+      setPlayingNotes({});
+    }
+  }, [isRecording]);
 
   const handlePlayNoteInput = (midiNumber, event) => {
     if (isRecording && !playingNotes[midiNumber]) {
@@ -45,31 +49,24 @@ const Piano = ({ isRecording, onPlayNote, onRecordNote }) => {
   };
 
   return (
-    <SoundfontProvider
-      instrumentName="acoustic_grand_piano"
-      audioContext={audioContext}
-      hostname={soundfontHostname}
-      render={({ isLoading, playNote, stopNote }) => (
-        <div>
-          <div>
-            <ReactPiano
-              disabled={isLoading}
-              noteRange={noteRange}
-              playNote={playNote}
-              stopNote={stopNote}
-              onPlayNoteInput={handlePlayNoteInput}
-              onStopNoteInput={handleStopNoteInput}
-              width={1000}
-              keyboardShortcuts={keyboardShortcuts}
-            />
-          </div>
-          <div>
-            <strong>Playing notes</strong>
-            <div>{JSON.stringify(playingNotes)}</div>
-          </div>
-        </div>
-      )}
-    />
+    <div>
+      <div>
+        <ReactPiano
+          disabled={isLoading}
+          noteRange={noteRange}
+          playNote={playNote}
+          stopNote={stopNote}
+          onPlayNoteInput={handlePlayNoteInput}
+          onStopNoteInput={handleStopNoteInput}
+          width={1000}
+          keyboardShortcuts={keyboardShortcuts}
+        />
+      </div>
+      <div>
+        <strong>Playing notes</strong>
+        <div>{JSON.stringify(playingNotes)}</div>
+      </div>
+    </div>
   );
 };
 
