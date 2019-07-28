@@ -1,48 +1,65 @@
 import React from 'react';
 
 import Piano from '../Piano';
-import { useRecording } from '../hooks';
+import { useRecording, usePlayRecording } from '../hooks';
 import styles from './style.module.css';
+import RecordButton from '../RecordButton';
 
 const App = () => {
-  const {
-    isRecording, canStopRecording, startRecording, recordedNotes, stopRecording, playNote, stopNote,
-  } = useRecording();
+  const recorder = useRecording();
+  const player = usePlayRecording();
 
   const toggleRecording = () => {
-    if (isRecording) {
-      stopRecording();
+    if (recorder.isRecording) {
+      recorder.stopRecording();
     } else {
-      startRecording();
+      recorder.startRecording();
     }
   };
 
-  const handlePlayNoteInput = (midiNumber) => {
-    playNote(midiNumber);
+  const handlePlayNoteInput = async (midiNumber) => {
+    recorder.playNote(midiNumber);
   };
 
-  const handleStopNoteInput = (midiNumber) => {
-    stopNote(midiNumber);
+  const handleStopNoteInput = async (midiNumber) => {
+    recorder.stopNote(midiNumber);
   };
 
-  const isRecordingBtnDisabled = isRecording && !canStopRecording;
+  const togglePlay = () => {
+    if (!recorder.isRecording) {
+      if (player.isPlaying) {
+        player.stop();
+      } else {
+        player.play(recorder.recordedNotes);
+      }
+    }
+  };
 
   return (
     <div className={styles.wrapper}>
       <h1>React Piano Task</h1>
       <Piano
+        activeNotes={player.activeNotes}
         onPlayNoteInput={handlePlayNoteInput}
         onStopNoteInput={handleStopNoteInput}
       />
       <div>
-        <button
+        <RecordButton
+          isRecording={recorder.isRecording}
+          canStopRecording={recorder.canStopRecording}
+          disabled={player.isPlaying || undefined}
           onClick={toggleRecording}
-          disabled={isRecordingBtnDisabled}
-        >{!isRecording ? 'Start' : 'Stop'} recording</button>
+        />
+        <button
+          onClick={togglePlay}
+          disabled={recorder.isRecording || !recorder.recordedNotes.length}
+        >
+          {player.isPlaying ? 'Stop playing' : 'Play song'}
+        </button>
       </div>
       <div>
         <strong>Recorded notes</strong>
-        <div>{JSON.stringify(recordedNotes)}</div>
+        <div>{JSON.stringify(recorder.recordedNotes)}</div>
       </div>
     </div>
   );
