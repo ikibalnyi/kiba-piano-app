@@ -1,53 +1,44 @@
-import React, { useState } from 'react';
-import './style.css';
+import React from 'react';
+
 import Piano from '../Piano';
+import { useRecording } from '../hooks';
+import styles from './style.module.css';
 
 const App = () => {
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordedNotes, setRecordedNotes] = useState([]);
-  const [startRecordingTime, setStartRecordingTime] = useState(null);
+  const {
+    isRecording, canStopRecording, startRecording, recordedNotes, stopRecording, playNote, stopNote,
+  } = useRecording();
 
   const toggleRecording = () => {
-    setIsRecording(!isRecording);
-
     if (isRecording) {
-      setStartRecordingTime(null);
-      setRecordedNotes([...recordedNotes].sort((a, b) => a.startTime > b.startTime ? 1 :
-        a.startTime < b.startTime ? -1 : 0));
+      stopRecording();
     } else {
-      setRecordedNotes([]);
+      startRecording();
     }
   };
 
-  const handlePlayNote = () => {
-    if (isRecording && !startRecordingTime) {
-      setStartRecordingTime(Date.now());
-    }
+  const handlePlayNoteInput = (midiNumber) => {
+    playNote(midiNumber);
   };
 
-  const handleRecordNote = ({ midiNumber, startTime, duration }) => {
-    if (isRecording) {
-      setRecordedNotes([
-        ...recordedNotes,
-        {
-          midiNumber,
-          startTime: startTime - startRecordingTime,
-          duration,
-        },
-      ]);
-    }
+  const handleStopNoteInput = (midiNumber) => {
+    stopNote(midiNumber);
   };
+
+  const isRecordingBtnDisabled = isRecording && !canStopRecording;
 
   return (
-    <div className="App">
+    <div className={styles.wrapper}>
       <h1>React Piano Task</h1>
       <Piano
-        isRecording={isRecording}
-        onPlayNote={handlePlayNote}
-        onRecordNote={handleRecordNote}
+        onPlayNoteInput={handlePlayNoteInput}
+        onStopNoteInput={handleStopNoteInput}
       />
       <div>
-        <button onClick={toggleRecording}>{!isRecording ? 'Start' : 'Stop'} recording</button>
+        <button
+          onClick={toggleRecording}
+          disabled={isRecordingBtnDisabled}
+        >{!isRecording ? 'Start' : 'Stop'} recording</button>
       </div>
       <div>
         <strong>Recorded notes</strong>
