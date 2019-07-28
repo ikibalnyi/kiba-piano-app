@@ -13,6 +13,7 @@
     "apollo-server": "^2.7.1",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
+    "lodash": "^4.17.15",
     "mongodb": "^3.3.0-beta2",
     "prop-types": "latest",
     "react": "^16.8.6",
