@@ -8,7 +8,7 @@ const compareStartTime = (a, b) => (
       -1 : 0
 );
 
-const useRecording = () => {
+const useRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordedNotes, setRecordedNotes] = useState([]);
   const [startRecordingTime, setStartRecordingTime] = useState(null);
@@ -68,4 +68,4 @@ const useRecording = () => {
   return { isRecording, canStopRecording, recordedNotes, startRecording, stopRecording, playNote, stopNote, clear };
 };
 
-export default useRecording;
+export default useRecorder;

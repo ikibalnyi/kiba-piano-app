@@ -1,14 +1,14 @@
 import React from 'react';
 
-import { useRecording, useTimer } from 'hooks';
+import { useRecorder, useTimer } from 'hooks';
 import { formatTime } from 'utils';
 import styles from './styles.module.css';
 import Piano from 'Piano';
-import RecordButton from 'RecordButton';
+import RecordButton from 'components/RecordButton';
 import SongForm from 'SongForm';
 
 const RecordingPiano = ({ saveSong, player }) => {
-  const recorder = useRecording();
+  const recorder = useRecorder();
   const timer = useTimer();
   const recordingTime = formatTime(timer.seconds);
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import PlayButton from '../PlayButton';
+import PlayButton from 'components/PlayButton';
 import styles from './styles.module.css';
 
 const SongsList = ({ songs, player }) => {

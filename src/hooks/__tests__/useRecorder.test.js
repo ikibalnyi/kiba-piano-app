@@ -1,17 +1,17 @@
 import { act } from '@testing-library/react';
 
 import { renderHook } from 'utils/testing';
-import useRecording from '../useRecording';
+import useRecorder from 'hooks/useRecorder';
 
 const realDateNow = Date.now;
 
-describe('useRecording', () => {
+describe('useRecorder', () => {
   let recorder;
   let dateNowMock;
 
   beforeEach(() => {
     renderHook(() => {
-      recorder = useRecording();
+      recorder = useRecorder();
     });
     dateNowMock = jest.fn(() => 2000);
 
