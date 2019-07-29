@@ -1,0 +1,23 @@
+.wrapper {
+  min-width: 480px;
+}
+
+.title {
+  text-align: center;
+  font-size: 18px;
+}
+
+.songWrapper {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.songTitle {
+
+}
+
+.songWrapper :global(.btn-play) {
+  margin-right: 10px;
+}

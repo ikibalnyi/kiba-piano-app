@@ -3,3 +3,19 @@
   align-items: center;
   flex-direction: column;
 }
+
+.pianoWrapper {
+  margin-bottom: 20px;
+}
+
+.recordingWrapper {
+  margin-bottom: 15px;
+}
+
+.recordingWrapper :global(.btn-record) {
+  margin-right: 5px;
+}
+
+.songFormWrapper {
+  float: right;
+}

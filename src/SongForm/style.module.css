@@ -1,0 +1,9 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.title {
+  font-size: 18px;
+}

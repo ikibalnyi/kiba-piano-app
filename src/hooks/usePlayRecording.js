@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import _ from 'lodash';
 
 const getRecordingEndTime = (recording = []) => {
@@ -12,31 +12,40 @@ const usePlayRecording = () => {
   const [activeNotes, setActiveNotes] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const scheduledEvents = useRef([]);
+  const cancel = useRef();
 
   const play = (recording) => {
-    setIsPlaying(true);
-    const startAndEndTimes = _.uniq(
-      _.flatMap(recording, (event) => [
-        event.startTime,
-        event.startTime + event.duration,
-      ])
-    );
-    startAndEndTimes.forEach((time) => {
+    stop();
+
+    return new Promise((resolve) => {
+      cancel.current = resolve;
+
+      setIsPlaying(true);
+      const startAndEndTimes = _.uniq(
+        _.flatMap(recording, (event) => [
+          event.startTime,
+          event.startTime + event.duration,
+        ])
+      );
+      startAndEndTimes.forEach((time) => {
+        scheduledEvents.current.push(
+          setTimeout(() => {
+            const currentEvents = recording.filter((event) => {
+              return event.startTime <= time && event.startTime + event.duration > time;
+            });
+
+            setActiveNotes(currentEvents.map(({ midiNumber }) => midiNumber));
+          }, time)
+        );
+      });
+
+      // Stop at the end
       scheduledEvents.current.push(
         setTimeout(() => {
-          const currentEvents = recording.filter((event) => {
-            return event.startTime <= time && event.startTime + event.duration > time;
-          });
-
-          setActiveNotes(currentEvents.map(({ midiNumber }) => midiNumber));
-        }, time)
+          stop();
+        }, getRecordingEndTime(recording))
       );
     });
-
-    // Stop at the end
-    setTimeout(() => {
-      stop();
-    }, getRecordingEndTime(recording));
   };
 
   const stop = () => {
@@ -46,7 +55,14 @@ const usePlayRecording = () => {
     scheduledEvents.current = [];
     setIsPlaying(false);
     setActiveNotes(null);
+
+    if (cancel.current) {
+      cancel.current();
+    }
+    cancel.current = null;
   };
+
+  useEffect(() => () => stop(), []);
 
 
   return { isPlaying, play, stop, activeNotes };

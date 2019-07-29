@@ -16,6 +16,13 @@ const useRecording = () => {
 
   const canStopRecording = !tracker.isPlaying;
 
+  const clear = () => {
+    setIsRecording(false);
+    setStartRecordingTime(null);
+    setRecordedNotes([]);
+    tracker.clear();
+  };
+
   const startRecording = () => {
     setIsRecording(true);
     setRecordedNotes([]);
@@ -53,7 +60,7 @@ const useRecording = () => {
     }
   };
 
-  return { isRecording, canStopRecording, recordedNotes, startRecording, stopRecording, playNote, stopNote };
+  return { isRecording, canStopRecording, recordedNotes, startRecording, stopRecording, playNote, stopNote, clear };
 };
 
 export default useRecording;

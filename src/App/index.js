@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import Piano from '../Piano';
 import { useRecording, usePlayRecording } from '../hooks';
-import styles from './style.module.css';
 import RecordButton from '../RecordButton';
+import SongList from '../SongList';
+import SongTitleForm from '../SongForm';
+import styles from './style.module.css';
 
 const App = () => {
   const recorder = useRecording();
   const player = usePlayRecording();
+  const [songs, setSongs] = useState([]);
 
   const toggleRecording = () => {
     if (recorder.isRecording) {
-      recorder.stopRecording();
+      if (recorder.canStopRecording) {
+        recorder.stopRecording();
+      }
     } else {
       recorder.startRecording();
     }
@@ -25,42 +30,53 @@ const App = () => {
     recorder.stopNote(midiNumber);
   };
 
-  const togglePlay = () => {
-    if (!recorder.isRecording) {
-      if (player.isPlaying) {
-        player.stop();
-      } else {
-        player.play(recorder.recordedNotes);
-      }
-    }
+  const handleSaveRecord = (title) => {
+    setSongs([
+      ...songs,
+      {
+        name: title,
+        track: recorder.recordedNotes,
+      },
+    ]);
+
+    recorder.clear();
   };
 
   return (
     <div className={styles.wrapper}>
       <h1>React Piano Task</h1>
-      <Piano
-        activeNotes={player.activeNotes}
-        onPlayNoteInput={handlePlayNoteInput}
-        onStopNoteInput={handleStopNoteInput}
-      />
       <div>
-        <RecordButton
-          isRecording={recorder.isRecording}
-          canStopRecording={recorder.canStopRecording}
-          disabled={player.isPlaying || undefined}
-          onClick={toggleRecording}
+        <div className={styles.pianoWrapper}>
+          <Piano
+            activeNotes={player.activeNotes}
+            onPlayNoteInput={handlePlayNoteInput}
+            onStopNoteInput={handleStopNoteInput}
+          />
+        </div>
+        <div className={styles.recordingWrapper}>
+          <RecordButton
+            isRecording={recorder.isRecording}
+            canStopRecording={recorder.canStopRecording}
+            disabled={player.isPlaying || undefined}
+            onClick={toggleRecording}
+          />
+          <div className={styles.songFormWrapper}>
+            {!recorder.isRecording && !!recorder.recordedNotes.length && (
+              <SongTitleForm
+                player={player}
+                song={recorder.recordedNotes}
+                onSave={handleSaveRecord}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+      {!!songs.length && (
+        <SongList
+          player={player}
+          songs={songs}
         />
-        <button
-          onClick={togglePlay}
-          disabled={recorder.isRecording || !recorder.recordedNotes.length}
-        >
-          {player.isPlaying ? 'Stop playing' : 'Play song'}
-        </button>
-      </div>
-      <div>
-        <strong>Recorded notes</strong>
-        <div>{JSON.stringify(recorder.recordedNotes)}</div>
-      </div>
+      )}
     </div>
   );
 };
