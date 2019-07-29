@@ -3,14 +3,13 @@ import ReactDOM from 'react-dom';
 import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 
-import './index.css';
+import './global.css';
 import App from './App';
 import SoundfontProvider from './SoundfontProvider';
 
 const client = new ApolloClient({
   uri: 'http://localhost:4000',
 });
-
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const soundfontHostname = 'https://d1pzp51pvbm36p.cloudfront.net';

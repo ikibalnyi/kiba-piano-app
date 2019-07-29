@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import PlayButton from '../PlayButton';
-import styles from './style.module.css';
+import styles from './styles.module.css';
 
 const SongForm = ({ song, player, onSave }) => {
   const [value, setValue] = useState('');

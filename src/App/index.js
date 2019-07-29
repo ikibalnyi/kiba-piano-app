@@ -5,7 +5,7 @@ import { useRecording, usePlayRecording } from '../hooks';
 import RecordButton from '../RecordButton';
 import SongList from '../SongList';
 import SongTitleForm from '../SongForm';
-import styles from './style.module.css';
+import styles from './styles.module.css';
 
 const App = () => {
   const recorder = useRecording();
