@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Soundfont from 'soundfont-player';
-import SoundfontContext from './SoundfontContext';
+
+export const SoundfontContext = React.createContext(null);
 
 const SoundfontProvider = (props) => {
   const [activeAudioNodes, setActiveAudioNodes] = useState({});

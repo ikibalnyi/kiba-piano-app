@@ -4,8 +4,8 @@ import ApolloClient from 'apollo-boost';
 import { ApolloProvider } from 'react-apollo';
 
 import './global.css';
-import App from './App';
-import SoundfontProvider from './SoundfontProvider';
+import App from 'containers/App';
+import { SoundfontProvider } from 'components';
 
 const client = new ApolloClient({
   uri: 'http://localhost:4000',

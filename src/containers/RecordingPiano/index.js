@@ -2,15 +2,14 @@ import React from 'react';
 
 import { useRecorder, useTimer } from 'hooks';
 import { formatTime } from 'utils';
+import { RecordButton } from 'components';
+import Piano from 'containers/Piano';
+import SongForm from 'containers/SongForm';
 import styles from './styles.module.css';
-import Piano from 'Piano';
-import RecordButton from 'components/RecordButton';
-import SongForm from 'SongForm';
 
 const RecordingPiano = ({ saveSong, player }) => {
   const recorder = useRecorder();
   const timer = useTimer();
-  const recordingTime = formatTime(timer.seconds);
 
   const toggleRecording = () => {
     if (recorder.isRecording) {
@@ -61,7 +60,7 @@ const RecordingPiano = ({ saveSong, player }) => {
             disabled={player.isPlaying}
             onClick={toggleRecording}
           />
-          <div className={styles.recordingTimer}>{recordingTime}</div>
+          <div className={styles.recordingTimer}>{formatTime(timer.seconds)}</div>
         </div>
         <div className={styles.songFormWrapper}>
           {!recorder.isRecording && !!recorder.recordedNotes.length && (

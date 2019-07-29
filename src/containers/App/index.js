@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
 import { usePlayer } from 'hooks';
-import RecordingPiano from 'RecordingPiano';
-import SongList from '../SongList';
-import styles from './styles.module.css';
+import RecordingPiano from 'containers/RecordingPiano';
+import SongList from 'containers/SongList';
+import styles from 'containers/App/styles.module.css';
 
 const App = () => {
   const player = usePlayer();

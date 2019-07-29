@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Piano as ReactPiano, KeyboardShortcuts, MidiNumbers } from 'react-piano';
 import 'react-piano/dist/styles.css';
 
-import SoundfontContext from './SoundfontContext';
+import { SoundfontContext } from 'components/SoundfontProvider';
 
 const noteRange = {
   first: MidiNumbers.fromNote('c3'),
