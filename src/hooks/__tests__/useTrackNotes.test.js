@@ -1,6 +1,6 @@
 import { act } from '@testing-library/react';
 
-import { renderHook } from 'testUtils';
+import { renderHook } from 'utils/testing';
 import useTrackNotes from '../useTrackNotes';
 
 const realDateNow = Date.now;

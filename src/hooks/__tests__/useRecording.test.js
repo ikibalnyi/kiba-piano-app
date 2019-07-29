@@ -1,6 +1,6 @@
 import { act } from '@testing-library/react';
 
-import { renderHook } from 'testUtils';
+import { renderHook } from 'utils/testing';
 import useRecording from '../useRecording';
 
 const realDateNow = Date.now;
@@ -162,5 +162,4 @@ describe('useRecording', () => {
     expect(recorder.isRecording).toBe(false);
     expect(recorder.recordedNotes).toEqual([]);
   });
-
 });
