@@ -1,24 +1,29 @@
 import React, { useState } from 'react';
 
+import { useRecording, usePlayRecording, useTimer } from '../hooks';
+import { formatTime } from 'utils';
 import Piano from '../Piano';
-import { useRecording, usePlayRecording } from '../hooks';
 import RecordButton from '../RecordButton';
 import SongList from '../SongList';
-import SongTitleForm from '../SongForm';
+import SongForm from '../SongForm';
 import styles from './styles.module.css';
 
 const App = () => {
   const recorder = useRecording();
   const player = usePlayRecording();
+  const timer = useTimer();
   const [songs, setSongs] = useState([]);
+  const recordingTime = formatTime(timer.seconds);
 
   const toggleRecording = () => {
     if (recorder.isRecording) {
       if (recorder.canStopRecording) {
         recorder.stopRecording();
+        timer.stopTimer();
       }
     } else {
       recorder.startRecording();
+      timer.startTimer();
     }
   };
 
@@ -40,6 +45,7 @@ const App = () => {
     ]);
 
     recorder.clear();
+    timer.resetTimer();
   };
 
   return (
@@ -54,15 +60,18 @@ const App = () => {
           />
         </div>
         <div className={styles.recordingWrapper}>
-          <RecordButton
-            isRecording={recorder.isRecording}
-            canStopRecording={recorder.canStopRecording}
-            disabled={player.isPlaying || undefined}
-            onClick={toggleRecording}
-          />
+          <div className={styles.recordingButtons}>
+            <RecordButton
+              isRecording={recorder.isRecording}
+              canStopRecording={recorder.canStopRecording}
+              disabled={player.isPlaying}
+              onClick={toggleRecording}
+            />
+            <div className={styles.recordingTimer}>{recordingTime}</div>
+          </div>
           <div className={styles.songFormWrapper}>
             {!recorder.isRecording && !!recorder.recordedNotes.length && (
-              <SongTitleForm
+              <SongForm
                 player={player}
                 song={recorder.recordedNotes}
                 onSave={handleSaveRecord}

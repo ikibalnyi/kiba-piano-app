@@ -9,13 +9,20 @@
 }
 
 .recordingWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
 }
 
-.recordingWrapper :global(.btn-record) {
-  margin-right: 5px;
+.recordingButtons {
+  display: flex;
+  align-items: center;
+}
+
+.recordingButtons .recordingTimer {
+  margin-left: 10px;
 }
 
 .songFormWrapper {
-  float: right;
 }
