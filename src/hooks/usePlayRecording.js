@@ -14,6 +14,20 @@ const usePlayRecording = () => {
   const scheduledEvents = useRef([]);
   const cancel = useRef();
 
+  const stop = () => {
+    scheduledEvents.current.forEach((scheduledEvent) => {
+      clearTimeout(scheduledEvent);
+    });
+    scheduledEvents.current = [];
+    setIsPlaying(false);
+    setActiveNotes(null);
+
+    if (cancel.current) {
+      cancel.current();
+      cancel.current = null;
+    }
+  };
+
   const play = (recording) => {
     stop();
 
@@ -46,20 +60,6 @@ const usePlayRecording = () => {
         }, getRecordingEndTime(recording))
       );
     });
-  };
-
-  const stop = () => {
-    scheduledEvents.current.forEach((scheduledEvent) => {
-      clearTimeout(scheduledEvent);
-    });
-    scheduledEvents.current = [];
-    setIsPlaying(false);
-    setActiveNotes(null);
-
-    if (cancel.current) {
-      cancel.current();
-    }
-    cancel.current = null;
   };
 
   useEffect(() => () => stop(), []);

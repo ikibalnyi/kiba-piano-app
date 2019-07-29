@@ -16,7 +16,7 @@ const SongsList = ({ songs, player }) => {
         player
           .play(song.track)
           .then(() => {
-            setSongIndex(-1);
+            setSongIndex((currentIndex) => currentIndex === index ? -1 : currentIndex);
           });
       }
     }
@@ -28,7 +28,6 @@ const SongsList = ({ songs, player }) => {
       {songs.map(({ name, track }, index) => (
         <div key={index} className={styles.songWrapper}>
           <PlayButton
-            className={styles.playBtn}
             isPlaying={index === songIndex}
             onClick={() => handlePlaySong(index)}
           />

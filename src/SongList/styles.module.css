@@ -14,9 +14,7 @@
   margin-bottom: 5px;
 }
 
-.songTitle {
-
-}
+.songTitle {}
 
 .songWrapper :global(.btn-play) {
   margin-right: 10px;
