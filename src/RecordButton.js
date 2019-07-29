@@ -1,10 +1,10 @@
 import React from 'react';
 
-const RecordButton = ({ isRecording, canStopRecording, ...props }) => (
+const RecordButton = ({ disabled, isRecording, canStopRecording, ...props }) => (
   <button
-    className="btn btn-icon btn-record"
-    disabled={isRecording && !canStopRecording}
     {...props}
+    className="btn btn-icon btn-record"
+    disabled={disabled || (isRecording && !canStopRecording)}
   >
     {!isRecording ? 'Start' : 'Stop'} recording
   </button>
