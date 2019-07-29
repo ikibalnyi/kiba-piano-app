@@ -14,7 +14,7 @@ const useRecording = () => {
   const [startRecordingTime, setStartRecordingTime] = useState(null);
   const tracker = useTrackNotes();
 
-  const canStopRecording = !tracker.isPlaying;
+  const canStopRecording = !tracker.isTracking;
 
   const clear = () => {
     setIsRecording(false);
