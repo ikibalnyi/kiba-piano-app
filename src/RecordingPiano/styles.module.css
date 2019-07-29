@@ -1,0 +1,22 @@
+.pianoWrapper {
+  margin-bottom: 20px;
+}
+
+.recordingWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.recordingButtons {
+  display: flex;
+  align-items: center;
+}
+
+.recordingButtons .recordingTimer {
+  margin-left: 10px;
+}
+
+.songFormWrapper {
+}

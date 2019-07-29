@@ -8,7 +8,7 @@ const getRecordingEndTime = (recording = []) => {
   return Math.max(...recording.map((event) => event.startTime + event.duration));
 };
 
-const usePlayRecording = () => {
+const usePlayer = () => {
   const [activeNotes, setActiveNotes] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const scheduledEvents = useRef([]);
@@ -48,7 +48,7 @@ const usePlayRecording = () => {
               return event.startTime <= time && event.startTime + event.duration > time;
             });
 
-            setActiveNotes(currentEvents.map(({ midiNumber }) => midiNumber));
+            setActiveNotes(() => currentEvents.map(({ midiNumber }) => midiNumber));
           }, time)
         );
       });
@@ -68,4 +68,4 @@ const usePlayRecording = () => {
   return { isPlaying, play, stop, activeNotes };
 };
 
-export default usePlayRecording;
+export default usePlayer;
