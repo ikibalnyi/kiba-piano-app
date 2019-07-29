@@ -15,13 +15,11 @@ const SoundfontProvider = (props) => {
     Soundfont.instrument(props.audioContext, props.instrumentName, {
       format: props.format,
       soundfont: props.soundfont,
-      nameToUrl: (name, soundfont, format) => {
-        return `${props.hostname}/${soundfont}/${name}-${format}.js`;
-      },
+      nameToUrl: (name, soundfont, format) => `${props.hostname}/${soundfont}/${name}-${format}.js`,
     }).then((instrument) => {
       setInstrument(instrument);
     });
-  }, [props.instrumentName]);
+  }, [props.audioContext, props.format, props.hostname, props.instrumentName, props.soundfont]);
 
   const playNote = (midiNumber) => {
     props.audioContext.resume().then(() => {
@@ -60,24 +58,26 @@ const SoundfontProvider = (props) => {
   };
 
   return (
-    <SoundfontContext.Provider value={{
-      playNote,
-      stopNote,
-      stopAllNotes,
-      isLoading: !instrument,
-    }}>
+    <SoundfontContext.Provider
+      value={{
+        playNote,
+        stopNote,
+        stopAllNotes,
+        isLoading: !instrument,
+      }}
+    >
       {props.children}
     </SoundfontContext.Provider>
   );
 };
 
 SoundfontProvider.propTypes = {
-  instrumentName: PropTypes.string.isRequired,
-  hostname: PropTypes.string.isRequired,
+  instrumentName: PropTypes.string,
   format: PropTypes.oneOf(['mp3', 'ogg']),
   soundfont: PropTypes.oneOf(['MusyngKite', 'FluidR3_GM']),
-  audioContext: PropTypes.instanceOf(window.AudioContext),
-  render: PropTypes.func,
+  hostname: PropTypes.string.isRequired,
+  audioContext: PropTypes.instanceOf(window.AudioContext).isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 SoundfontProvider.defaultProps = {

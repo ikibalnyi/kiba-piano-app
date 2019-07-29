@@ -5,7 +5,7 @@ const getRecordingEndTime = (recording = []) => {
   if (recording.length === 0) {
     return 0;
   }
-  return Math.max(...recording.map((event) => event.startTime + event.duration));
+  return Math.max(...recording.map(event => event.startTime + event.duration));
 };
 
 const usePlayer = () => {
@@ -36,20 +36,20 @@ const usePlayer = () => {
 
       setIsPlaying(true);
       const startAndEndTimes = _.uniq(
-        _.flatMap(recording, (event) => [
+        _.flatMap(recording, event => [
           event.startTime,
           event.startTime + event.duration,
-        ])
+        ]),
       );
       startAndEndTimes.forEach((time) => {
         scheduledEvents.current.push(
           setTimeout(() => {
-            const currentEvents = recording.filter((event) => {
-              return event.startTime <= time && event.startTime + event.duration > time;
-            });
+            const currentEvents = recording.filter(event => (
+              event.startTime <= time && event.startTime + event.duration > time
+            ));
 
             setActiveNotes(() => currentEvents.map(({ midiNumber }) => midiNumber));
-          }, time)
+          }, time),
         );
       });
 
@@ -57,7 +57,7 @@ const usePlayer = () => {
       scheduledEvents.current.push(
         setTimeout(() => {
           stop();
-        }, getRecordingEndTime(recording))
+        }, getRecordingEndTime(recording)),
       );
     });
   };

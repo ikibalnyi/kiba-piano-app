@@ -21,9 +21,8 @@ ReactDOM.render(
       audioContext={audioContext}
       hostname={soundfontHostname}
     >
-      <App/>
+      <App />
     </SoundfontProvider>
   </ApolloProvider>,
-  document.getElementById('root')
+  document.getElementById('root'),
 );
-

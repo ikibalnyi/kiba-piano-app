@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'propTypes';
 
 import { PlayButton } from 'components';
 import styles from './styles.module.css';
@@ -43,10 +44,11 @@ const SongForm = ({ song, player, onSave }) => {
         type="text"
         placeholder="Song title"
         value={value}
-        onKeyDown={(evt) => evt.stopPropagation()}
+        onKeyDown={evt => evt.stopPropagation()}
         onChange={handleChange}
       />
       <button
+        type="button"
         className="btn"
         onClick={handleClickSave}
       >
@@ -54,6 +56,12 @@ const SongForm = ({ song, player, onSave }) => {
       </button>
     </div>
   );
+};
+
+SongForm.propTypes = {
+  song: PropTypes.Song.isRequired,
+  player: PropTypes.Player.isRequired,
+  onSave: PropTypes.func,
 };
 
 export default SongForm;

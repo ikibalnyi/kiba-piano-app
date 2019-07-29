@@ -8,7 +8,7 @@ const useTimer = () => {
     setSeconds(0);
 
     interval.current = setInterval(() => {
-      setSeconds((sec) => sec + 1);
+      setSeconds(sec => sec + 1);
     }, 1000);
   };
 

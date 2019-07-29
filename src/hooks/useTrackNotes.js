@@ -21,6 +21,8 @@ const useTrackNotes = () => {
       setTrackingNotes(restPlayingNotes);
       return { midiNumber, startTime, duration };
     }
+
+    return null;
   };
 
   const clear = () => {

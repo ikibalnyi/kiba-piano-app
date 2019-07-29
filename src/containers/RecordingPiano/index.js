@@ -5,6 +5,7 @@ import { formatTime } from 'utils';
 import { RecordButton } from 'components';
 import Piano from 'containers/Piano';
 import SongForm from 'containers/SongForm';
+import PropTypes from 'propTypes';
 import styles from './styles.module.css';
 
 const RecordingPiano = ({ saveSong, player }) => {
@@ -30,7 +31,6 @@ const RecordingPiano = ({ saveSong, player }) => {
   const handleStopNoteInput = async (midiNumber) => {
     recorder.stopNote(midiNumber);
   };
-
 
   const handleSaveSong = (title) => {
     Promise.resolve(saveSong({
@@ -76,5 +76,10 @@ const RecordingPiano = ({ saveSong, player }) => {
   );
 };
 
+
+RecordingPiano.propTypes = {
+  saveSong: PropTypes.func.isRequired,
+  player: PropTypes.Player.isRequired,
+};
 
 export default RecordingPiano;

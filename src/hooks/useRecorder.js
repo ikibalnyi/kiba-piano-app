@@ -2,11 +2,12 @@ import { useState } from 'react';
 
 import useTrackNotes from './useTrackNotes';
 
-const compareStartTime = (a, b) => (
-  a.startTime > b.startTime ?
-    1 : a.startTime < b.startTime ?
-      -1 : 0
-);
+const compareStartTime = (a, b) => {
+  if (a.startTime > b.startTime) return 1;
+  if (a.startTime < b.startTime) return -1;
+
+  return 0;
+};
 
 const useRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);

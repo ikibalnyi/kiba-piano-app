@@ -3,6 +3,7 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const getMongoConnection = require('./getMongoConnection');
 
 // don't require a separate mongodb instance to run
+// eslint-disable-next-line no-new
 new MongoMemoryServer({ instance: { port: 27017 } });
 
 const typeDefs = gql`

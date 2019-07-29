@@ -4,7 +4,7 @@ const formatTime = (timestamp) => {
   const seconds = timestamp % 60;
 
   return [minutes, seconds]
-    .map((v) => v < 10 ? '0' + v : v)
+    .map(v => (v < 10 ? `0${v}` : v))
     .join(':');
 };
 
