@@ -1,113 +1,88 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Soundfont from 'soundfont-player';
 import SoundfontContext from './SoundfontContext';
 
-class SoundfontProvider extends React.Component {
-  static propTypes = {
-    instrumentName: PropTypes.string.isRequired,
-    hostname: PropTypes.string.isRequired,
-    format: PropTypes.oneOf(['mp3', 'ogg']),
-    soundfont: PropTypes.oneOf(['MusyngKite', 'FluidR3_GM']),
-    audioContext: PropTypes.instanceOf(window.AudioContext),
-    render: PropTypes.func,
-  };
+const SoundfontProvider = (props) => {
+  const [activeAudioNodes, setActiveAudioNodes] = useState({});
+  const [instrument, setInstrument] = useState(null);
 
-  static defaultProps = {
-    format: 'mp3',
-    soundfont: 'MusyngKite',
-    instrumentName: 'acoustic_grand_piano',
-  };
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeAudioNodes: {},
-      instrument: null,
-    };
-  }
-
-  componentDidMount() {
-    this.loadInstrument(this.props.instrumentName);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.instrumentName !== this.props.instrumentName) {
-      this.loadInstrument(this.props.instrumentName);
-    }
-  }
-
-  loadInstrument = (instrumentName) => {
+  useEffect(() => {
     // Re-trigger loading state
-    this.setState({
-      instrument: null,
-    });
-    Soundfont.instrument(this.props.audioContext, instrumentName, {
-      format: this.props.format,
-      soundfont: this.props.soundfont,
+    setInstrument(null);
+
+    Soundfont.instrument(props.audioContext, props.instrumentName, {
+      format: props.format,
+      soundfont: props.soundfont,
       nameToUrl: (name, soundfont, format) => {
-        return `${this.props.hostname}/${soundfont}/${name}-${format}.js`;
+        return `${props.hostname}/${soundfont}/${name}-${format}.js`;
       },
     }).then((instrument) => {
-      this.setState({
-        instrument,
+      setInstrument(instrument);
+    });
+  }, [props.instrumentName]);
+
+  const playNote = (midiNumber) => {
+    props.audioContext.resume().then(() => {
+      const audioNode = instrument.play(midiNumber);
+      setActiveAudioNodes({
+        ...activeAudioNodes,
+        [midiNumber]: audioNode,
       });
     });
   };
 
-  playNote = (midiNumber) => {
-    this.props.audioContext.resume().then(() => {
-      const audioNode = this.state.instrument.play(midiNumber);
-      this.setState({
-        activeAudioNodes: Object.assign({}, this.state.activeAudioNodes, {
-          [midiNumber]: audioNode,
-        }),
-      });
-    });
-  };
-
-  stopNote = (midiNumber) => {
-    this.props.audioContext.resume().then(() => {
-      if (!this.state.activeAudioNodes[midiNumber]) {
+  const stopNote = (midiNumber) => {
+    props.audioContext.resume().then(() => {
+      if (!activeAudioNodes[midiNumber]) {
         return;
       }
-      const audioNode = this.state.activeAudioNodes[midiNumber];
+      const audioNode = activeAudioNodes[midiNumber];
       audioNode.stop();
-      this.setState({
-        activeAudioNodes: Object.assign({}, this.state.activeAudioNodes, {
-          [midiNumber]: null,
-        }),
+      setActiveAudioNodes({
+        ...activeAudioNodes,
+        [midiNumber]: null,
       });
     });
   };
 
   // Clear any residual notes that don't get called with stopNote
-  stopAllNotes = () => {
-    this.props.audioContext.resume().then(() => {
-      const activeAudioNodes = Object.values(this.state.activeAudioNodes);
-      activeAudioNodes.forEach((node) => {
+  const stopAllNotes = () => {
+    props.audioContext.resume().then(() => {
+      for (const node of activeAudioNodes) {
         if (node) {
           node.stop();
         }
-      });
-      this.setState({
-        activeAudioNodes: {},
-      });
+      }
+      setActiveAudioNodes({});
     });
   };
 
-  render() {
-    return (
-      <SoundfontContext.Provider value={{
-        isLoading: !this.state.instrument,
-        playNote: this.playNote,
-        stopNote: this.stopNote,
-        stopAllNotes: this.stopAllNotes,
-      }}>
-        {this.props.children}
-      </SoundfontContext.Provider>
-    );
-  }
-}
+  return (
+    <SoundfontContext.Provider value={{
+      playNote,
+      stopNote,
+      stopAllNotes,
+      isLoading: !instrument,
+    }}>
+      {props.children}
+    </SoundfontContext.Provider>
+  );
+};
+
+SoundfontProvider.propTypes = {
+  instrumentName: PropTypes.string.isRequired,
+  hostname: PropTypes.string.isRequired,
+  format: PropTypes.oneOf(['mp3', 'ogg']),
+  soundfont: PropTypes.oneOf(['MusyngKite', 'FluidR3_GM']),
+  audioContext: PropTypes.instanceOf(window.AudioContext),
+  render: PropTypes.func,
+};
+
+SoundfontProvider.defaultProps = {
+  format: 'mp3',
+  soundfont: 'MusyngKite',
+  instrumentName: 'acoustic_grand_piano',
+};
 
 export default SoundfontProvider;
