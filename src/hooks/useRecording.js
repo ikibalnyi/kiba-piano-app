@@ -33,30 +33,35 @@ const useRecording = () => {
       setIsRecording(false);
       setStartRecordingTime(null);
       setRecordedNotes([...recordedNotes].sort(compareStartTime));
+      tracker.clear();
     }
   };
 
   const playNote = (midiNumber) => {
-    if (isRecording && !startRecordingTime) {
-      setStartRecordingTime(Date.now());
-    }
+    if (isRecording) {
+      if (!startRecordingTime) {
+        setStartRecordingTime(Date.now());
+      }
 
-    tracker.startNote(midiNumber);
+      tracker.startNote(midiNumber);
+    }
   };
 
   const stopNote = (midiNumber) => {
-    const noteEvent = tracker.stopNote(midiNumber);
-    if (isRecording && noteEvent) {
-      const { startTime, duration } = noteEvent;
+    if (isRecording) {
+      const noteEvent = tracker.stopNote(midiNumber);
+      if (noteEvent) {
+        const { startTime, duration } = noteEvent;
 
-      setRecordedNotes([
-        ...recordedNotes,
-        {
-          midiNumber,
-          startTime: startTime - startRecordingTime,
-          duration,
-        },
-      ]);
+        setRecordedNotes([
+          ...recordedNotes,
+          {
+            midiNumber,
+            startTime: startTime - startRecordingTime,
+            duration,
+          },
+        ]);
+      }
     }
   };
 
