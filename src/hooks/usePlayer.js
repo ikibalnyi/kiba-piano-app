@@ -11,6 +11,8 @@ const getRecordingEndTime = (recording = []) => {
 const usePlayer = () => {
   const [activeNotes, setActiveNotes] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [currentSong, setCurrentSong] = useState(null);
   const scheduledEvents = useRef([]);
   const cancel = useRef();
 
@@ -21,6 +23,7 @@ const usePlayer = () => {
     scheduledEvents.current = [];
     setIsPlaying(false);
     setActiveNotes(null);
+    setCurrentSong(null);
 
     if (cancel.current) {
       cancel.current();
@@ -28,15 +31,17 @@ const usePlayer = () => {
     }
   };
 
-  const play = (recording) => {
+  const play = (keySequence) => {
     stop();
 
     return new Promise((resolve) => {
       cancel.current = resolve;
 
+      setCurrentSong(keySequence);
       setIsPlaying(true);
+
       const startAndEndTimes = _.uniq(
-        _.flatMap(recording, event => [
+        _.flatMap(keySequence, event => [
           event.startTime,
           event.startTime + event.duration,
         ]),
@@ -44,7 +49,7 @@ const usePlayer = () => {
       startAndEndTimes.forEach((time) => {
         scheduledEvents.current.push(
           setTimeout(() => {
-            const currentEvents = recording.filter(event => (
+            const currentEvents = keySequence.filter(event => (
               event.startTime <= time && event.startTime + event.duration > time
             ));
 
@@ -57,15 +62,17 @@ const usePlayer = () => {
       scheduledEvents.current.push(
         setTimeout(() => {
           stop();
-        }, getRecordingEndTime(recording)),
+        }, getRecordingEndTime(keySequence)),
       );
     });
   };
 
   useEffect(() => () => stop(), []);
 
+  const disable = () => setIsDisabled(true);
+  const enable = () => setIsDisabled(false);
 
-  return { isPlaying, play, stop, activeNotes };
+  return { isPlaying, currentSong, play, stop, activeNotes, isDisabled, disable, enable };
 };
 
 export default usePlayer;

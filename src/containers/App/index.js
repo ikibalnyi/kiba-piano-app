@@ -1,15 +1,16 @@
 import React from 'react';
-import { Query } from 'react-apollo';
+import { Mutation } from 'react-apollo';
 import gql from 'graphql-tag';
 
-import { usePlayer } from 'hooks';
-import RecordingPiano from 'containers/RecordingPiano';
+import Recorder from 'containers/Recorder';
 import SongList from 'containers/SongList';
 import styles from 'containers/App/styles.module.css';
+import Piano from 'containers/Piano';
+import { PlaybackProvider } from 'containers/Playback';
 
-const GET_SONGS = gql`
-    query Songs {
-        songs {
+const ADD_SONG = gql`
+    mutation AddSong($title: String!, $keySequence: [NoteEventInput]!) {
+        addSong(title: $title, keySequence: $keySequence) {
             _id
             title
             keySequence {
@@ -21,23 +22,34 @@ const GET_SONGS = gql`
     }
 `;
 
-const App = () => {
-  const player = usePlayer();
-
-  return (
-    <div className={styles.wrapper}>
-      <h1>React Piano Task</h1>
-      <RecordingPiano player={player} />
-      <Query query={GET_SONGS}>
-        {({ data }) => (data && data.songs && data.songs.length ? (
-          <SongList
-            songs={data.songs}
-            player={player}
-          />
-        ) : null)}
-      </Query>
-    </div>
-  );
-};
+const App = () => (
+  <PlaybackProvider>
+    {player => (
+      <div className={styles.wrapper}>
+        <h1>React Piano Task</h1>
+        <Mutation mutation={ADD_SONG} refetchQueries={['Songs']}>
+          {addSong => (
+            <Recorder
+              onStartRecording={() => player.disable()}
+              onStopRecording={() => player.enable()}
+              disabled={player.isPlaying}
+              renderPiano={({ onPlayNote, onStopNote }) => (
+                <Piano
+                  activeNotes={player.activeNotes}
+                  onPlayNoteInput={onPlayNote}
+                  onStopNoteInput={onStopNote}
+                />
+              )}
+              saveSong={({ title, keySequence }) => (
+                addSong({ variables: { title, keySequence } })
+              )}
+            />
+          )}
+        </Mutation>
+        <SongList />
+      </div>
+    )}
+  </PlaybackProvider>
+);
 
 export default App;
