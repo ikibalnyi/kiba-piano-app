@@ -17,11 +17,11 @@ const Recorder = ({ disabled, renderPiano, saveSong, onStartRecording, onStopRec
     if (recorder.isRecording) {
       recorder.stopRecording();
       timer.stopTimer();
-      onStopRecording();
+      if (onStopRecording) onStopRecording();
     } else {
       recorder.startRecording();
       timer.startTimer();
-      onStartRecording();
+      if (onStartRecording) onStartRecording();
     }
   };
 
@@ -44,16 +44,17 @@ const Recorder = ({ disabled, renderPiano, saveSong, onStartRecording, onStopRec
       <div className={styles.recordingWrapper}>
         <div className={styles.recordingButtons}>
           <RecordButton
+            data-testid="record-button"
             isRecording={recorder.isRecording}
             disabled={disabled || recorder.hasPressedKeys}
             onClick={toggleRecording}
           />
           <div className={styles.recordingTimer}>{formatTime(timer.seconds)}</div>
         </div>
-        {!recorder.isRecording && !!recorder.keySequence.length && (
-          <div className={styles.songFormWrapper}>
+        {!recorder.isRecording && recorder.keySequence && !!recorder.keySequence.length && (
+          <div className={styles.songFormWrapper} data-testid="song-form-wrapper">
             <PlaybackButton keySequence={recorder.keySequence} />
-            <SongForm onSave={handleClickSave} />
+            <SongForm onSave={handleClickSave} data-testid="song-form" />
           </div>
         )}
       </div>

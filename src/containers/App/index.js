@@ -33,15 +33,15 @@ const App = () => (
               onStartRecording={() => player.disable()}
               onStopRecording={() => player.enable()}
               disabled={player.isPlaying}
+              saveSong={({ title, keySequence }) => (
+                addSong({ variables: { title, keySequence } })
+              )}
               renderPiano={({ onPlayNote, onStopNote }) => (
                 <Piano
                   activeNotes={player.activeNotes}
                   onPlayNoteInput={onPlayNote}
                   onStopNoteInput={onStopNote}
                 />
-              )}
-              saveSong={({ title, keySequence }) => (
-                addSong({ variables: { title, keySequence } })
               )}
             />
           )}

@@ -23,6 +23,7 @@ const SongForm = ({ onSave }) => {
   return (
     <div className={styles.wrapper}>
       <input
+        data-testid="song-form-input"
         type="text"
         placeholder="Song title"
         value={value}
@@ -30,6 +31,7 @@ const SongForm = ({ onSave }) => {
         onChange={handleChange}
       />
       <button
+        data-testid="song-form-button"
         type="button"
         className="btn"
         onClick={handleClickSave}
