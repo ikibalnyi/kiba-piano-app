@@ -1,37 +1,36 @@
 import { useState } from 'react';
 
 const useTrackNotes = () => {
-  const [trackingNotes, setTrackingNotes] = useState({});
+  const [activeNotes, setActiveNotes] = useState({});
 
-  const startNote = (midiNumber) => {
-    if (!trackingNotes[midiNumber]) {
-      setTrackingNotes({
-        ...trackingNotes,
-        [midiNumber]: Date.now(),
+  const startNote = (midiNumber, state, forceOverride = false) => {
+    if (!activeNotes[midiNumber] || forceOverride) {
+      setActiveNotes({
+        ...activeNotes,
+        [midiNumber]: state,
       });
     }
   };
 
   const stopNote = (midiNumber) => {
-    const { [midiNumber]: startTime, ...restPlayingNotes } = trackingNotes;
+    const { [midiNumber]: state, ...restPlayingNotes } = activeNotes;
 
-    if (startTime) {
-      const duration = Date.now() - startTime;
-
-      setTrackingNotes(restPlayingNotes);
-      return { midiNumber, startTime, duration };
+    if (state) {
+      setActiveNotes(restPlayingNotes);
     }
 
-    return null;
+    return state;
   };
 
-  const clear = () => {
-    setTrackingNotes({});
+  const stopAllNotes = () => {
+    const entries = Object.entries(activeNotes);
+    setActiveNotes({});
+    return entries;
   };
 
-  const isTracking = !!Object.keys(trackingNotes).length;
+  const isTracking = !!Object.keys(activeNotes).length;
 
-  return { isTracking, trackingNotes, startNote, stopNote, clear };
+  return { hasActiveNotes: isTracking, activeNotes, startNote, stopNote, stopAllNotes };
 };
 
 export default useTrackNotes;

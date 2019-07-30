@@ -33,18 +33,16 @@ describe('useRecorder', () => {
 
   describe('startRecording', () => {
     it('should set isRecording to true but should not have anything recorded', () => {
-      act(() => {
-        recorder.startRecording();
-      });
+      act(() => recorder.startRecording());
 
       expect(recorder.isRecording).toBe(true);
       expect(recorder.keySequence).toEqual([]);
     });
 
-    it('should reset recorder notes', () => {
+    it('should not reset recorder notes', () => {
       act(() => recorder.startRecording());
-      act(() => recorder.playNote(123));
-      act(() => recorder.stopNote(123));
+      act(() => recorder.onPlayNote(123));
+      act(() => recorder.onStopNote(123));
 
       expect(recorder.isRecording).toBe(true);
       expect(recorder.keySequence).toHaveLength(1);
@@ -52,41 +50,60 @@ describe('useRecorder', () => {
       act(() => recorder.startRecording());
 
       expect(recorder.isRecording).toBe(true);
-      expect(recorder.keySequence).toEqual([]);
+      expect(recorder.keySequence).toHaveLength(1);
     });
   });
 
   describe('stopRecording', () => {
-    it('should not stop recording when notes a tracking', () => {
-      act(() => recorder.startRecording());
-      act(() => recorder.playNote(123));
-
-      expect(recorder.isRecording).toBe(true);
+    it('should do nothing when recording is not started', () => {
+      act(() => recorder.onPlayNote(123));
+      expect(recorder.isRecording).toBe(false);
+      expect(recorder.hasPressedKeys).toBe(true);
 
       act(() => recorder.stopRecording());
-
-      expect(recorder.isRecording).toBe(true);
+      expect(recorder.isRecording).toBe(false);
+      expect(recorder.hasPressedKeys).toBe(true);
     });
 
-    it('should stop recording but keep recorded notes', () => {
+    it('should stop recording and save recorded notes', () => {
       act(() => recorder.startRecording());
-      act(() => recorder.playNote(123));
-      act(() => recorder.stopNote(123));
+      act(() => recorder.onPlayNote(123));
+      act(() => recorder.onStopNote(123));
 
       expect(recorder.isRecording).toBe(true);
-      const { keySequence } = recorder;
+      expect(recorder.hasPressedKeys).toBe(false);
+
+      act(() => recorder.stopRecording());
+      expect(recorder.isRecording).toBe(false);
+    });
+
+    it('should stop recording and save them active notes', () => {
+      dateNowMock
+        .mockReturnValueOnce(200) // start first note
+        .mockReturnValueOnce(250) // start second node
+        .mockReturnValueOnce(300) // end first note
+        .mockReturnValueOnce(300); // end second node
+
+      act(() => recorder.startRecording());
+      act(() => recorder.onPlayNote(123));
+      act(() => recorder.onPlayNote(321));
+
+      expect(recorder.isRecording).toBe(true);
+      expect(recorder.hasPressedKeys).toBe(true);
+      expect(recorder.keySequence).toHaveLength(0);
 
       act(() => recorder.stopRecording());
 
       expect(recorder.isRecording).toBe(false);
-      expect(recorder.keySequence).toEqual(keySequence);
+      expect(recorder.hasPressedKeys).toBe(false);
+      expect(recorder.keySequence).toHaveLength(2);
     });
   });
 
 
   it('should not record note when recording is not started', () => {
-    act(() => recorder.playNote(123));
-    act(() => recorder.stopNote(123));
+    act(() => recorder.onPlayNote(123));
+    act(() => recorder.onStopNote(123));
 
     expect(recorder.isRecording).toBe(false);
     expect(recorder.keySequence).toEqual([]);
@@ -95,7 +112,7 @@ describe('useRecorder', () => {
 
   it('should not record when note is not played', () => {
     act(() => recorder.startRecording());
-    act(() => recorder.stopNote(123));
+    act(() => recorder.onStopNote(123));
 
     expect(recorder.isRecording).toBe(true);
     expect(recorder.keySequence).toEqual([]);
@@ -112,8 +129,8 @@ describe('useRecorder', () => {
       .mockReturnValueOnce(endTime); // stop note time
 
     act(() => recorder.startRecording());
-    act(() => recorder.playNote(midiNumber));
-    act(() => recorder.stopNote(midiNumber));
+    act(() => recorder.onPlayNote(midiNumber));
+    act(() => recorder.onStopNote(midiNumber));
 
     expect(recorder.isRecording).toBe(true);
     expect(recorder.keySequence).toHaveLength(1);
@@ -121,25 +138,34 @@ describe('useRecorder', () => {
   });
 
   it('notes start time should depend on first touched note', () => {
-    const startRecordingTime = 2000;
-    const startNoteTime = 2000;
-    const endNoteTime = 2500;
-    const midiNumber = 123;
+    const notes = [
+      {
+        midiNumber: 123,
+        startTime: 2000,
+        endTime: 5000,
+      },
+      {
+        midiNumber: 321,
+        startTime: 2500,
+        endTime: 2600,
+      },
+    ];
 
     dateNowMock
-      .mockReturnValueOnce(startRecordingTime) // actual start recording time
-      .mockReturnValueOnce(startNoteTime) // play note time
-      .mockReturnValueOnce(endNoteTime); // stop note time
+      .mockReturnValueOnce(notes[0].startTime) // play note time
+      .mockReturnValueOnce(notes[1].startTime) // play note time
+      .mockReturnValueOnce(notes[1].endTime); // stop note time
 
     act(() => recorder.startRecording());
-    act(() => recorder.playNote(midiNumber));
-    act(() => recorder.stopNote(midiNumber));
+    act(() => recorder.onPlayNote(notes[0].midiNumber));
+    act(() => recorder.onPlayNote(notes[1].midiNumber));
+    act(() => recorder.onStopNote(notes[1].midiNumber));
 
     expect(recorder.isRecording).toBe(true);
     expect(recorder.keySequence).toEqual([{
-      startTime: startNoteTime - startRecordingTime,
-      midiNumber,
-      duration: endNoteTime - startNoteTime,
+      midiNumber: notes[1].midiNumber,
+      startTime: notes[1].startTime - notes[0].startTime,
+      duration: notes[1].endTime - notes[1].startTime,
     }]);
   });
 
@@ -155,8 +181,8 @@ describe('useRecorder', () => {
       .mockReturnValueOnce(endNoteTime); // stop note time
 
     act(() => recorder.startRecording());
-    act(() => recorder.playNote(midiNumber));
-    act(() => recorder.stopNote(midiNumber));
+    act(() => recorder.onPlayNote(midiNumber));
+    act(() => recorder.onStopNote(midiNumber));
     act(() => recorder.clear());
 
     expect(recorder.isRecording).toBe(false);

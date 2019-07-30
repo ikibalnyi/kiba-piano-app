@@ -31,22 +31,12 @@ const RecordingPiano = ({ player }) => {
 
   const toggleRecording = () => {
     if (recorder.isRecording) {
-      if (recorder.canStopRecording) {
-        recorder.stopRecording();
-        timer.stopTimer();
-      }
+      recorder.stopRecording();
+      timer.stopTimer();
     } else {
       recorder.startRecording();
       timer.startTimer();
     }
-  };
-
-  const handlePlayNoteInput = async (midiNumber) => {
-    recorder.playNote(midiNumber);
-  };
-
-  const handleStopNoteInput = async (midiNumber) => {
-    recorder.stopNote(midiNumber);
   };
 
   const handleSongAdded = () => {
@@ -59,16 +49,15 @@ const RecordingPiano = ({ player }) => {
       <div className={styles.pianoWrapper}>
         <Piano
           activeNotes={player.activeNotes}
-          onPlayNoteInput={handlePlayNoteInput}
-          onStopNoteInput={handleStopNoteInput}
+          onPlayNoteInput={recorder.onPlayNote}
+          onStopNoteInput={recorder.onStopNote}
         />
       </div>
       <div className={styles.recordingWrapper}>
         <div className={styles.recordingButtons}>
           <RecordButton
             isRecording={recorder.isRecording}
-            canStopRecording={recorder.canStopRecording}
-            disabled={player.isPlaying}
+            disabled={player.isPlaying || recorder.hasPressedKeys}
             onClick={toggleRecording}
           />
           <div className={styles.recordingTimer}>{formatTime(timer.seconds)}</div>

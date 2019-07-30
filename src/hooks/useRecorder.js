@@ -15,58 +15,78 @@ const useRecorder = () => {
   const [startRecordingTime, setStartRecordingTime] = useState(null);
   const keyTracker = useTrackNotes();
 
-  const canStopRecording = !keyTracker.isTracking;
+  const hasPressedKeys = keyTracker.hasActiveNotes;
 
   const clear = () => {
     setIsRecording(false);
     setStartRecordingTime(null);
     setKeySequence([]);
-    keyTracker.clear();
+    keyTracker.stopAllNotes();
+  };
+
+  const recordNote = (midiNumber, startTime, endTime) => {
+    const duration = endTime - startTime;
+
+    setKeySequence(keySequence => [
+      ...keySequence,
+      {
+        midiNumber,
+        startTime: startTime - startRecordingTime,
+        duration,
+      },
+    ]);
+  };
+
+  const recordActiveNotes = () => {
+    const entries = keyTracker.stopAllNotes();
+    const endTime = Date.now();
+
+    for (const [midiNumber, startTime] of entries) {
+      recordNote(midiNumber, startTime, endTime);
+    }
+  };
+
+  const onPlayNote = (midiNumber) => {
+    const startTime = Date.now();
+
+    if (isRecording) {
+      if (!startRecordingTime) {
+        setStartRecordingTime(startTime);
+      }
+    }
+
+    keyTracker.startNote(midiNumber, startTime);
+  };
+
+  const onStopNote = (midiNumber) => {
+    const startTime = keyTracker.stopNote(midiNumber);
+
+    if (isRecording && startTime) {
+      const endTime = Date.now();
+      recordNote(midiNumber, startTime, endTime);
+    }
   };
 
   const startRecording = () => {
-    setIsRecording(true);
-    setKeySequence([]);
+    if (!isRecording) {
+      setIsRecording(true);
+      setKeySequence([]);
+      setStartRecordingTime(null);
+    }
   };
 
   const stopRecording = () => {
-    if (canStopRecording) {
+    if (isRecording) {
+      if (hasPressedKeys) {
+        recordActiveNotes();
+      }
       setIsRecording(false);
       setStartRecordingTime(null);
-      setKeySequence([...keySequence].sort(compareStartTime));
-      keyTracker.clear();
+      setKeySequence(keySequence => [...keySequence].sort(compareStartTime));
     }
   };
 
-  const playNote = (midiNumber) => {
-    if (isRecording) {
-      if (!startRecordingTime) {
-        setStartRecordingTime(Date.now());
-      }
-
-      keyTracker.startNote(midiNumber);
-    }
-  };
-
-  const stopNote = (midiNumber) => {
-    if (isRecording) {
-      const noteEvent = keyTracker.stopNote(midiNumber);
-      if (noteEvent) {
-        const { startTime, duration } = noteEvent;
-
-        setKeySequence([
-          ...keySequence,
-          {
-            midiNumber,
-            startTime: startTime - startRecordingTime,
-            duration,
-          },
-        ]);
-      }
-    }
-  };
-
-  return { isRecording, canStopRecording, keySequence, startRecording, stopRecording, playNote, stopNote, clear };
+  return { isRecording, hasPressedKeys, keySequence, startRecording, stopRecording, onPlayNote, onStopNote, clear };
 };
 
 export default useRecorder;

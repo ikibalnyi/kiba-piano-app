@@ -1,1 +1,1 @@
-export { default as formatTime } from 'utils/formatTime';
+export { default as formatTime } from './formatTime';

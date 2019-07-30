@@ -3,73 +3,58 @@ import { act } from '@testing-library/react';
 import { renderHook } from 'utils/testing';
 import useTrackNotes from '../useTrackNotes';
 
-const realDateNow = Date.now;
-
 describe('useTrackNotes', () => {
   let tracker;
-  let nowMock;
 
   beforeEach(() => {
     renderHook(() => {
       tracker = useTrackNotes();
     });
-    nowMock = jest.fn();
-    Date.now = nowMock;
   });
 
-  afterEach(() => {
-    nowMock.mockReset();
-  });
-
-  afterAll(() => {
-    Date.now = realDateNow;
-  });
 
   it('should not track notes by default', () => {
-    expect(tracker.isTracking).toBe(false);
-    expect(tracker.trackingNotes).toEqual({});
+    expect(tracker.hasActiveNotes).toBe(false);
+    expect(tracker.activeNotes).toEqual({});
   });
 
   describe('startNote', () => {
-    it('should set isTracking to true', () => {
-      act(() => {
-        tracker.startNote(38);
-      });
-      expect(tracker.isTracking).toBe(true);
+    it('should set hasActiveNotes to true', () => {
+      act(() => tracker.startNote(38));
+      expect(tracker.hasActiveNotes).toBe(true);
     });
 
-    it('should set tracking note with Date.now', () => {
+    it('should set note state', () => {
       const midiNumber = 38;
-      const nowValue = 123456789;
-      nowMock.mockReturnValue(nowValue);
+      const state = 123456789;
 
-      act(() => {
-        tracker.startNote(midiNumber);
-      });
-      expect(tracker.isTracking).toBe(true);
-      expect(nowMock).toHaveBeenCalled();
-      expect(tracker.trackingNotes).toHaveProperty(String(midiNumber), nowValue);
+      act(() => tracker.startNote(midiNumber, state));
+      expect(tracker.hasActiveNotes).toBe(true);
+      expect(tracker.activeNotes).toHaveProperty(String(midiNumber), state);
     });
 
-    it('should not override tracking note', () => {
+    it('should not override tracking note by default', () => {
       const midiNumber = 38;
-      const firstStartTime = 123456789;
-      const secondStartTime = 987654321;
-      nowMock
-        .mockReturnValueOnce(firstStartTime)
-        .mockReturnValueOnce(secondStartTime);
+      const state = 123456789;
+      const newState = 987654321;
 
-      act(() => {
-        tracker.startNote(midiNumber);
-      });
+      act(() => tracker.startNote(midiNumber, state));
+      act(() => tracker.startNote(midiNumber, newState));
 
-      act(() => {
-        tracker.startNote(midiNumber);
-      });
+      expect(tracker.hasActiveNotes).toBe(true);
+      expect(tracker.activeNotes).toHaveProperty(String(midiNumber), state);
+    });
 
-      expect(tracker.isTracking).toBe(true);
-      expect(nowMock).toHaveBeenCalledTimes(1);
-      expect(tracker.trackingNotes).toHaveProperty(String(midiNumber), firstStartTime);
+    it('should override tracking note if said', () => {
+      const midiNumber = 38;
+      const state = 123456789;
+      const newState = 987654321;
+
+      act(() => tracker.startNote(midiNumber, state));
+      act(() => tracker.startNote(midiNumber, newState, true));
+
+      expect(tracker.hasActiveNotes).toBe(true);
+      expect(tracker.activeNotes).toHaveProperty(String(midiNumber), newState);
     });
   });
 
@@ -81,76 +66,81 @@ describe('useTrackNotes', () => {
         tracker.stopNote(midiNumber);
       });
 
-      expect(nowMock).not.toHaveBeenCalled();
-      expect(tracker.trackingNotes).toEqual({});
-      expect(tracker.isTracking).toBe(false);
+      expect(tracker.activeNotes).toEqual({});
+      expect(tracker.hasActiveNotes).toBe(false);
     });
 
-    it('should stop tracking a note', () => {
+    it('should remove active notes', () => {
       const midiNumber = 38;
-      const startTime = 2000;
-      const stopTime = 2500;
+      const state = 2000;
 
-      nowMock
-        .mockReturnValueOnce(startTime)
-        .mockReturnValueOnce(stopTime);
+      act(() => tracker.startNote(midiNumber, state));
 
-      act(() => {
-        tracker.startNote(midiNumber);
-      });
+      expect(tracker.activeNotes).toEqual({ [midiNumber]: state });
 
-      act(() => {
-        tracker.stopNote(midiNumber);
-      });
+      act(() => { tracker.stopNote(midiNumber); });
 
-      expect(nowMock).toHaveBeenCalledTimes(2);
-      expect(tracker.trackingNotes).toEqual({});
+      expect(tracker.activeNotes).toEqual({});
+      expect(tracker.hasActiveNotes).toBe(false);
     });
 
-    it('should return midiNumber, startTime and duration that note was playing', () => {
+    it('should return state when note stopped', () => {
       const midiNumber = 38;
-      const startTime = 2000;
-      const stopTime = 2500;
+      const state = 2000;
       let received;
 
-      nowMock
-        .mockReturnValueOnce(startTime)
-        .mockReturnValueOnce(stopTime);
-
-      act(() => {
-        tracker.startNote(midiNumber);
-      });
+      act(() => tracker.startNote(midiNumber, state));
 
       act(() => {
         received = tracker.stopNote(midiNumber);
       });
 
-      expect(received).toMatchObject({
-        midiNumber,
-        startTime,
-        duration: stopTime - startTime,
-      });
+      expect(received).toBe(state);
     });
   });
 
-  describe('clear', () => {
+  describe('stopAll', () => {
     it('should stop all tracking notes', () => {
       const midiNumber = 38;
-      const startTime = 2000;
+      const state = 2000;
 
-      nowMock
-        .mockReturnValueOnce(startTime);
+      act(() => tracker.startNote(midiNumber, state));
+
+      expect(tracker.hasActiveNotes).toBe(true);
+
+      act(() => { tracker.stopAllNotes(); });
+
+      expect(tracker.activeNotes).toEqual({});
+      expect(tracker.hasActiveNotes).toBe(false);
+    });
+
+    it('should return entries of all active notes', () => {
+      const notes = [
+        {
+          midiNumber: 321,
+          state: 321,
+        },
+        {
+          midiNumber: 123,
+          state: 123,
+        },
+      ];
+      let received;
+
+      act(() => tracker.startNote(notes[0].midiNumber, notes[0].state));
+      act(() => tracker.startNote(notes[1].midiNumber, notes[1].state));
+
+      expect(tracker.hasActiveNotes).toBe(true);
 
       act(() => {
-        tracker.startNote(midiNumber);
+        received = tracker.stopAllNotes();
       });
 
-      act(() => {
-        tracker.clear();
-      });
-
-      expect(tracker.trackingNotes).toEqual({});
-      expect(tracker.isTracking).toEqual(false);
+      expect(tracker.hasActiveNotes).toBe(false);
+      expect(received).toEqual(expect.arrayContaining([
+        [String(notes[0].midiNumber), notes[0].state],
+        [String(notes[1].midiNumber), notes[1].state],
+      ]));
     });
   });
 });
