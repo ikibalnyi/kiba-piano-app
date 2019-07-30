@@ -7,10 +7,22 @@ const getMongoConnection = require('./getMongoConnection');
 new MongoMemoryServer({ instance: { port: 27017 } });
 
 const typeDefs = gql`
+    input NoteEventInput {
+        midiNumber: Int
+        startTime: Int
+        duration: Int
+    }
+
+    type NoteEvent {
+        midiNumber: Int
+        startTime: Int
+        duration: Int
+    }
+  
     type Song {
         _id: ID!
         title: String
-        keyStrokes: [String]
+        keySequence: [NoteEvent]
     }
 
     type Query {
@@ -18,7 +30,7 @@ const typeDefs = gql`
     }
 
     type Mutation {
-        addSong(title: String, keyStrokes: [String]): Song
+        addSong(title: String, keySequence: [NoteEventInput]): Song
     }
 `;
 
@@ -30,10 +42,10 @@ const resolvers = {
     },
   },
   Mutation: {
-    addSong: async (_, { title, keyStrokes }) => {
+    addSong: async (_, { title, keySequence }) => {
       const mongodb = await getMongoConnection();
       try {
-        const response = await mongodb.collection('songs').insertOne({ title, keyStrokes });
+        const response = await mongodb.collection('songs').insertOne({ title, keySequence });
         return mongodb.collection('songs').findOne({ _id: response.insertedId });
       } catch (e) {
         console.error(e);
