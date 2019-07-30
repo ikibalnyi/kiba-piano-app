@@ -26,9 +26,9 @@ const SongsList = ({ songs, player }) => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.title}>My Songs</div>
-      {songs.map(({ title }, index) => (
+      {songs.map(({ title, _id }, index) => (
         // eslint-disable-next-line react/no-array-index-key
-        <div key={index} className={styles.songWrapper}>
+        <div key={_id} className={styles.songWrapper}>
           <PlayButton
             isPlaying={index === songIndex}
             onClick={() => handlePlaySong(index)}

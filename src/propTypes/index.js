@@ -9,6 +9,7 @@ const NoteEvent = PropTypes.shape({
 const KeySequence = PropTypes.arrayOf(NoteEvent);
 
 const Song = PropTypes.shape({
+  _id: PropTypes.string,
   title: PropTypes.string,
   keySequence: KeySequence,
 });
