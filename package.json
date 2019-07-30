@@ -5,11 +5,10 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^4.0.0",
     "@testing-library/react": "^8.0.7",
-    "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0",
     "eslint": "5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-plugin-jsx-a11y": "6.2.3",
+    "nodemon": "^1.19.1",
     "react-scripts": "3.0.1"
   },
   "dependencies": {
