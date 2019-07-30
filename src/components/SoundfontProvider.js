@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Soundfont from 'soundfont-player';
+import { useTrackNotes } from 'hooks';
 
 export const SoundfontContext = React.createContext(null);
 
 const SoundfontProvider = (props) => {
-  const [activeAudioNodes, setActiveAudioNodes] = useState({});
+  const tracker = useTrackNotes();
   const [instrument, setInstrument] = useState(null);
 
   useEffect(() => {
@@ -24,36 +25,30 @@ const SoundfontProvider = (props) => {
   const playNote = (midiNumber) => {
     props.audioContext.resume().then(() => {
       const audioNode = instrument.play(midiNumber);
-      setActiveAudioNodes({
-        ...activeAudioNodes,
-        [midiNumber]: audioNode,
-      });
+      tracker.startNote(midiNumber, audioNode, true);
     });
   };
 
   const stopNote = (midiNumber) => {
     props.audioContext.resume().then(() => {
-      if (!activeAudioNodes[midiNumber]) {
-        return;
+      const audioNode = tracker.stopNote(midiNumber);
+      if (audioNode) {
+        audioNode.stop();
       }
-      const audioNode = activeAudioNodes[midiNumber];
-      audioNode.stop();
-      setActiveAudioNodes({
-        ...activeAudioNodes,
-        [midiNumber]: null,
-      });
     });
   };
 
   // Clear any residual notes that don't get called with stopNote
   const stopAllNotes = () => {
     props.audioContext.resume().then(() => {
-      for (const node of activeAudioNodes) {
-        if (node) {
-          node.stop();
+      const entries = tracker.stopAllNotes();
+
+      // eslint-disable-next-line no-unused-vars
+      for (const [midiNumber, audioNode] of entries) {
+        if (audioNode) {
+          audioNode.stop();
         }
       }
-      setActiveAudioNodes({});
     });
   };
 
