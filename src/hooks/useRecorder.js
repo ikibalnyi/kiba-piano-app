@@ -11,30 +11,30 @@ const compareStartTime = (a, b) => {
 
 const useRecorder = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const [recordedNotes, setRecordedNotes] = useState([]);
+  const [keySequence, setKeySequence] = useState([]);
   const [startRecordingTime, setStartRecordingTime] = useState(null);
-  const tracker = useTrackNotes();
+  const keyTracker = useTrackNotes();
 
-  const canStopRecording = !tracker.isTracking;
+  const canStopRecording = !keyTracker.isTracking;
 
   const clear = () => {
     setIsRecording(false);
     setStartRecordingTime(null);
-    setRecordedNotes([]);
-    tracker.clear();
+    setKeySequence([]);
+    keyTracker.clear();
   };
 
   const startRecording = () => {
     setIsRecording(true);
-    setRecordedNotes([]);
+    setKeySequence([]);
   };
 
   const stopRecording = () => {
     if (canStopRecording) {
       setIsRecording(false);
       setStartRecordingTime(null);
-      setRecordedNotes([...recordedNotes].sort(compareStartTime));
-      tracker.clear();
+      setKeySequence([...keySequence].sort(compareStartTime));
+      keyTracker.clear();
     }
   };
 
@@ -44,18 +44,18 @@ const useRecorder = () => {
         setStartRecordingTime(Date.now());
       }
 
-      tracker.startNote(midiNumber);
+      keyTracker.startNote(midiNumber);
     }
   };
 
   const stopNote = (midiNumber) => {
     if (isRecording) {
-      const noteEvent = tracker.stopNote(midiNumber);
+      const noteEvent = keyTracker.stopNote(midiNumber);
       if (noteEvent) {
         const { startTime, duration } = noteEvent;
 
-        setRecordedNotes([
-          ...recordedNotes,
+        setKeySequence([
+          ...keySequence,
           {
             midiNumber,
             startTime: startTime - startRecordingTime,
@@ -66,7 +66,7 @@ const useRecorder = () => {
     }
   };
 
-  return { isRecording, canStopRecording, recordedNotes, startRecording, stopRecording, playNote, stopNote, clear };
+  return { isRecording, canStopRecording, keySequence, startRecording, stopRecording, playNote, stopNote, clear };
 };
 
 export default useRecorder;

@@ -15,7 +15,7 @@ const SongsList = ({ songs, player }) => {
       if (song) {
         setSongIndex(index);
         player
-          .play(song.track)
+          .play(song.keySequence)
           .then(() => {
             setSongIndex(currentIndex => (currentIndex === index ? -1 : currentIndex));
           });
@@ -26,14 +26,14 @@ const SongsList = ({ songs, player }) => {
   return (
     <div className={styles.wrapper}>
       <div className={styles.title}>My Songs</div>
-      {songs.map(({ name, track }, index) => (
+      {songs.map(({ title }, index) => (
         // eslint-disable-next-line react/no-array-index-key
         <div key={index} className={styles.songWrapper}>
           <PlayButton
             isPlaying={index === songIndex}
             onClick={() => handlePlaySong(index)}
           />
-          <div className={styles.songTitle}>{name}</div>
+          <div className={styles.songTitle}>{title}</div>
         </div>
       ))}
     </div>

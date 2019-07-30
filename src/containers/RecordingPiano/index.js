@@ -35,7 +35,7 @@ const RecordingPiano = ({ saveSong, player }) => {
   const handleSaveSong = (title) => {
     Promise.resolve(saveSong({
       title,
-      notes: recorder.recordedNotes,
+      keySequence: recorder.keySequence,
     }))
       .then(() => {
         recorder.clear();
@@ -63,10 +63,10 @@ const RecordingPiano = ({ saveSong, player }) => {
           <div className={styles.recordingTimer}>{formatTime(timer.seconds)}</div>
         </div>
         <div className={styles.songFormWrapper}>
-          {!recorder.isRecording && !!recorder.recordedNotes.length && (
+          {!recorder.isRecording && !!recorder.keySequence.length && (
             <SongForm
               player={player}
-              song={recorder.recordedNotes}
+              song={recorder.keySequence}
               onSave={handleSaveSong}
             />
           )}

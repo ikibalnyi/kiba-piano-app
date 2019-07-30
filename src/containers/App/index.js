@@ -9,12 +9,12 @@ const App = () => {
   const player = usePlayer();
   const [songs, setSongs] = useState([]);
 
-  const handleSaveSong = ({ title, notes }) => {
+  const handleSaveSong = ({ title, keySequence }) => {
     setSongs([
       ...songs,
       {
-        name: title,
-        track: notes,
+        title,
+        keySequence,
       },
     ]);
   };

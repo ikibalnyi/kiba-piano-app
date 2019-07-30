@@ -6,7 +6,12 @@ const NoteEvent = PropTypes.shape({
   duration: PropTypes.number,
 });
 
-const Song = PropTypes.arrayOf(NoteEvent);
+const KeySequence = PropTypes.arrayOf(NoteEvent);
+
+const Song = PropTypes.shape({
+  title: PropTypes.string,
+  keySequence: KeySequence,
+});
 
 const Player = PropTypes.shape({
   activeNotes: PropTypes.arrayOf(PropTypes.number),
@@ -19,6 +24,7 @@ const Player = PropTypes.shape({
 export default {
   ...PropTypes,
   NoteEvent,
+  KeySequence,
   Song,
   Player,
 };

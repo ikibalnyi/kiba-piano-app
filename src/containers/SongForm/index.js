@@ -59,7 +59,7 @@ const SongForm = ({ song, player, onSave }) => {
 };
 
 SongForm.propTypes = {
-  song: PropTypes.Song.isRequired,
+  song: PropTypes.KeySequence.isRequired,
   player: PropTypes.Player.isRequired,
   onSave: PropTypes.func,
 };

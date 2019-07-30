@@ -28,7 +28,7 @@ describe('useRecorder', () => {
 
   it('should not record anything and be empty by default', () => {
     expect(recorder.isRecording).toBe(false);
-    expect(recorder.recordedNotes).toEqual([]);
+    expect(recorder.keySequence).toEqual([]);
   });
 
   describe('startRecording', () => {
@@ -38,7 +38,7 @@ describe('useRecorder', () => {
       });
 
       expect(recorder.isRecording).toBe(true);
-      expect(recorder.recordedNotes).toEqual([]);
+      expect(recorder.keySequence).toEqual([]);
     });
 
     it('should reset recorder notes', () => {
@@ -47,12 +47,12 @@ describe('useRecorder', () => {
       act(() => recorder.stopNote(123));
 
       expect(recorder.isRecording).toBe(true);
-      expect(recorder.recordedNotes).toHaveLength(1);
+      expect(recorder.keySequence).toHaveLength(1);
 
       act(() => recorder.startRecording());
 
       expect(recorder.isRecording).toBe(true);
-      expect(recorder.recordedNotes).toEqual([]);
+      expect(recorder.keySequence).toEqual([]);
     });
   });
 
@@ -74,12 +74,12 @@ describe('useRecorder', () => {
       act(() => recorder.stopNote(123));
 
       expect(recorder.isRecording).toBe(true);
-      const { recordedNotes } = recorder;
+      const { keySequence } = recorder;
 
       act(() => recorder.stopRecording());
 
       expect(recorder.isRecording).toBe(false);
-      expect(recorder.recordedNotes).toEqual(recordedNotes);
+      expect(recorder.keySequence).toEqual(keySequence);
     });
   });
 
@@ -89,7 +89,7 @@ describe('useRecorder', () => {
     act(() => recorder.stopNote(123));
 
     expect(recorder.isRecording).toBe(false);
-    expect(recorder.recordedNotes).toEqual([]);
+    expect(recorder.keySequence).toEqual([]);
   });
 
 
@@ -98,7 +98,7 @@ describe('useRecorder', () => {
     act(() => recorder.stopNote(123));
 
     expect(recorder.isRecording).toBe(true);
-    expect(recorder.recordedNotes).toEqual([]);
+    expect(recorder.keySequence).toEqual([]);
   });
 
   it('should record note', () => {
@@ -116,8 +116,8 @@ describe('useRecorder', () => {
     act(() => recorder.stopNote(midiNumber));
 
     expect(recorder.isRecording).toBe(true);
-    expect(recorder.recordedNotes).toHaveLength(1);
-    expect(recorder.recordedNotes[0]).toHaveProperty('midiNumber', midiNumber);
+    expect(recorder.keySequence).toHaveLength(1);
+    expect(recorder.keySequence[0]).toHaveProperty('midiNumber', midiNumber);
   });
 
   it('notes start time should depend on first touched note', () => {
@@ -136,7 +136,7 @@ describe('useRecorder', () => {
     act(() => recorder.stopNote(midiNumber));
 
     expect(recorder.isRecording).toBe(true);
-    expect(recorder.recordedNotes).toEqual([{
+    expect(recorder.keySequence).toEqual([{
       startTime: startNoteTime - startRecordingTime,
       midiNumber,
       duration: endNoteTime - startNoteTime,
@@ -160,6 +160,6 @@ describe('useRecorder', () => {
     act(() => recorder.clear());
 
     expect(recorder.isRecording).toBe(false);
-    expect(recorder.recordedNotes).toEqual([]);
+    expect(recorder.keySequence).toEqual([]);
   });
 });
