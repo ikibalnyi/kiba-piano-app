@@ -1,4 +1,5 @@
 import React from 'react';
+import gql from 'graphql-tag';
 
 import { useRecorder, useTimer } from 'hooks';
 import { formatTime } from 'utils';
@@ -6,9 +7,25 @@ import { RecordButton } from 'components';
 import Piano from 'containers/Piano';
 import SongForm from 'containers/SongForm';
 import PropTypes from 'propTypes';
+import { Mutation } from 'react-apollo';
 import styles from './styles.module.css';
 
-const RecordingPiano = ({ saveSong, player }) => {
+
+const ADD_SONG = gql`
+    mutation AddSong($title: String!, $keySequence: [NoteEventInput]!) {
+        addSong(title: $title, keySequence: $keySequence) {
+            _id
+            title
+            keySequence {
+                midiNumber
+                startTime
+                duration
+            }
+        }
+    }
+`;
+
+const RecordingPiano = ({ player }) => {
   const recorder = useRecorder();
   const timer = useTimer();
 
@@ -32,15 +49,9 @@ const RecordingPiano = ({ saveSong, player }) => {
     recorder.stopNote(midiNumber);
   };
 
-  const handleSaveSong = (title) => {
-    Promise.resolve(saveSong({
-      title,
-      keySequence: recorder.keySequence,
-    }))
-      .then(() => {
-        recorder.clear();
-        timer.resetTimer();
-      });
+  const handleSongAdded = () => {
+    recorder.clear();
+    timer.resetTimer();
   };
 
   return (
@@ -64,11 +75,19 @@ const RecordingPiano = ({ saveSong, player }) => {
         </div>
         <div className={styles.songFormWrapper}>
           {!recorder.isRecording && !!recorder.keySequence.length && (
-            <SongForm
-              player={player}
-              song={recorder.keySequence}
-              onSave={handleSaveSong}
-            />
+            <Mutation mutation={ADD_SONG} refetchQueries={['Songs']} onCompleted={handleSongAdded}>
+              {addSong => (
+                <SongForm
+                  player={player}
+                  song={recorder.keySequence}
+                  onSave={(title) => {
+                    addSong({
+                      variables: { title, keySequence: recorder.keySequence },
+                    });
+                  }}
+                />
+              )}
+            </Mutation>
           )}
         </div>
       </div>
@@ -78,7 +97,6 @@ const RecordingPiano = ({ saveSong, player }) => {
 
 
 RecordingPiano.propTypes = {
-  saveSong: PropTypes.func.isRequired,
   player: PropTypes.Player.isRequired,
 };
 
