@@ -5,7 +5,7 @@ import { ApolloProvider } from 'react-apollo';
 
 import './global.css';
 import App from 'containers/App';
-import { SoundfontProvider } from 'components';
+import SoundfontProvider from 'containers/SoundfontProvider';
 
 const client = new ApolloClient({
   uri: 'http://localhost:4000',
