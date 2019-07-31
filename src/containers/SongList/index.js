@@ -27,12 +27,14 @@ const SongsList = () => (
         if (loading) return <div>Loading songs...</div>;
         if (error) return <div>Error: {error.message}</div>;
 
-        return data.songs.map(({ _id, title, keySequence }) => (
-          <div key={_id} className={styles.songWrapper}>
-            <PlaybackButton keySequence={keySequence} />
-            <div className={styles.songTitle}>{title}</div>
-          </div>
-        ));
+        return !data || !data.songs ? null : (
+          data.songs.map(({ _id, title, keySequence }) => (
+            <div key={_id} className={styles.songWrapper}>
+              <PlaybackButton keySequence={keySequence} />
+              <div className={styles.songTitle}>{title}</div>
+            </div>
+          ))
+        );
       }}
     </Query>
   </div>
