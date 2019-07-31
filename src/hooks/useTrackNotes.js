@@ -5,18 +5,18 @@ const useTrackNotes = () => {
 
   const startNote = (midiNumber, state, forceOverride = false) => {
     if (!activeNotes[midiNumber] || forceOverride) {
-      setActiveNotes({
+      setActiveNotes(activeNotes => ({
         ...activeNotes,
         [midiNumber]: state,
-      });
+      }));
     }
   };
 
   const stopNote = (midiNumber) => {
-    const { [midiNumber]: state, ...restPlayingNotes } = activeNotes;
+    const { [midiNumber]: state } = activeNotes;
 
     if (state) {
-      setActiveNotes(restPlayingNotes);
+      setActiveNotes(({ [midiNumber]: state, ...activeNotes }) => activeNotes);
     }
 
     return state;
