@@ -1,7 +1,7 @@
 import { act } from '@testing-library/react';
 
 import { renderHook } from 'utils/testing';
-import useRecorder from 'hooks/useRecorder';
+import useRecorder from '../useRecorder';
 
 const realDateNow = Date.now;
 

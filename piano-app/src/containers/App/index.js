@@ -4,9 +4,9 @@ import gql from 'graphql-tag';
 
 import Recorder from 'containers/Recorder';
 import SongList from 'containers/SongList';
-import styles from 'containers/App/styles.module.css';
 import Piano from 'containers/Piano';
 import { PlaybackProvider } from 'containers/Playback';
+import styles from './styles.module.css';
 
 const ADD_SONG = gql`
     mutation AddSong($title: String!, $keySequence: [NoteEventInput]!) {

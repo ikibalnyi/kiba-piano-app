@@ -1,7 +1,7 @@
 import React from 'react';
 
 import PropTypes from 'propTypes';
-import { usePlayback } from 'containers/Playback';
+import usePlayback from './usePlayback';
 
 const PlaybackButton = ({ keySequence, ...props }) => {
   const player = usePlayback();

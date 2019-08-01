@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import PropTypes from 'propTypes';
 
+import PropTypes from 'propTypes';
 import styles from './styles.module.css';
 
 const SongForm = ({ onSave }) => {

@@ -8,17 +8,13 @@
     "eslint": "5.16.0",
     "eslint-config-airbnb": "^17.1.1",
     "eslint-plugin-jsx-a11y": "6.2.3",
-    "mongodb-memory-server": "^5.1.9",
-    "nodemon": "^1.19.1",
     "react-scripts": "3.0.1"
   },
   "dependencies": {
     "apollo-boost": "^0.4.3",
-    "apollo-server": "^2.7.1",
     "graphql": "^14.4.2",
     "graphql-tag": "^2.10.1",
     "lodash": "^4.17.15",
-    "mongodb": "^3.3.0-beta2",
     "prop-types": "latest",
     "react": "^16.8.6",
     "react-apollo": "^2.5.8",
@@ -28,7 +24,6 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "server": "nodemon ./server/index.js",
     "build": "react-scripts build",
     "test": "react-scripts test"
   },
