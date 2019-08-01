@@ -1,1 +1,1 @@
-export { default as formatTime } from 'piano-app/src/utils/formatTime';
+export { default as formatTime } from './formatTime';
