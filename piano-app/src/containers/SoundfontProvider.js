@@ -20,7 +20,7 @@ const SoundfontProvider = (props) => {
     }).then((instrument) => {
       setInstrument(instrument);
     });
-  }, [props.audioContext, props.format, props.hostname, props.instrumentName, props.soundfont]);
+  }, [props.instrumentName]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const playNote = (midiNumber) => {
     props.audioContext.resume().then(() => {
